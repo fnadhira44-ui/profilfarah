@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Digital Profile - Farah Nadhira</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #121211;
+            --secondary: #3f2e1f;
+            --bg-dark: #0f172a;
+            --glass: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(255, 255, 255, 0.1);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background: radial-gradient(circle at top left, #27272c, #777779);
+            color: #f8fafc;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        /* Container Card */
+        .card {
+            width: 100%;
+            max-width: 500px;
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            padding: 30px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* --- TAMBAHAN: Style Layar Persetujuan --- */
+        #layar-persetujuan {
+            text-align: center;
+            padding: 20px 0;
+        }
+
+        .btn-akses {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            margin-top: 20px;
+            width: 100%;
+            transition: 0.3s;
+        }
+
+        .btn-akses:hover { transform: scale(1.02); }
+
+        /* --- Style Konten Utama --- */
+        #konten-utama {
+            display: none; /* Tersembunyi di awal */
+        }
+
+        .profile-header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .avatar-wrapper {
+            position: relative;
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 15px;
+        }
+
+        .avatar-wrapper img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid var(--primary);
+            padding: 4px;
+        }
+
+        /* TAMBAHAN: Tombol Upload Foto */
+        .upload-btn {
+            position: absolute;
+            bottom: 5px;
+            right: 5px;
+            background: var(--primary);
+            border-radius: 50%;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            border: 2px solid var(--bg-dark);
+            font-size: 14px;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 25px;
+            background: rgba(0,0,0,0.2);
+            padding: 5px;
+            border-radius: 12px;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            background: transparent;
+            color: #94a3b8;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 13px;
+            border-radius: 8px;
+            transition: 0.3s;
+        }
+
+        .tab-btn.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        .content-section {
+            display: none;
+        }
+
+        .content-section.active {
+            display: block;
+        }
+
+        .info-box {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--glass-border);
+            padding: 15px;
+            border-radius: 16px;
+            margin-bottom: 12px;
+        }
+
+        .info-label {
+            display: block;
+            font-size: 11px;
+            text-transform: uppercase;
+            color: var(--primary);
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .info-value {
+            font-size: 15px;
+        }
+
+        footer {
+            margin-top: 25px;
+            text-align: center;
+            font-size: 12px;
+            color: #64748b;
+        }
+
+        input[type="file"] { display: none; }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    
+    <div id="layar-persetujuan">
+        <h2>Persetujuan Akses</h2>
+        <p style="font-size: 14px; color: #94a3b8; margin: 15px 0;">Klik tombol di bawah untuk menyetujui pembukaan data pribadi mahasiswa.</p>
+        <button class="btn-akses" onclick="izinkanAkses()">SAYA SETUJU</button>
+    </div>
+
+    <div id="konten-utama">
+        <div class="profile-header">
+            <div class="avatar-wrapper">
+                <img id="display-foto" src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" alt="Profile">
+                <label for="upload-foto" class="upload-btn">📷</label>
+                <input type="file" id="upload-foto" onchange="previewImage(event)">
+            </div>
+            <h2 id="display-nama-header"></h2>
+            <p id="display-npm-header" style="color: #94a3b8; font-size: 14px;"></p>
+        </div>
+
+        <div class="tabs">
+            <button class="tab-btn active" onclick="switchTab('tab-profil', this)">PROFIL</button>
+            <button class="tab-btn" onclick="switchTab('tab-pendidikan', this)">PENDIDIKAN</button>
+            <button class="tab-btn" onclick="switchTab('tab-pengalaman', this)">PENGALAMAN</button>
+        </div>
+
+        <div id="tab-profil" class="content-section active">
+            <div class="info-box">
+                <span class="info-label">Nama Lengkap</span>
+                <div class="info-value" id="val-nama"></div>
+            </div>
+            <div class="info-box">
+                <span class="info-label">Email</span>
+                <div class="info-value" id="val-email"></div>
+            </div>
+            <div class="info-box">
+                <span class="info-label">Lokasi</span>
+                <div class="info-value" id="val-alamat"></div>
+            </div>
+        </div>
+
+        <div id="tab-pendidikan" class="content-section">
+            <div class="info-box">
+                <span class="info-label">Universitas</span>
+                <div class="info-value" id="val-kampus"></div>
+            </div>
+            <div class="info-box">
+                <span class="info-label">Jurusan</span>
+                <div class="info-value" id="val-jurusan"></div>
+            </div>
+            <div class="info-box">
+                <span class="info-label">Semester</span>
+                <div class="info-value" id="val-semester"></div>
+            </div>
+        </div>
+
+        <div id="tab-pengalaman" class="content-section">
+            <div class="info-box">
+                <span class="info-label">Catatan Akademik</span>
+                <p id="val-pengalaman" style="font-size: 14px; line-height: 1.6; color: #cbd5e1;"></p>
+            </div>
+        </div>
+
+        <footer>
+            &copy; 2026 Teknik Informatika • Digital ID
+        </footer>
+    </div>
+</div>
+
+<script>
+    // DATA TETAP TERPISAH
+    const dataMahasiswa = {
+        nama: "Farah Nadhira",
+        npm: "24105111008",
+        email: "fnadhira44@gmail.com",
+        alamat: "Aceh, Indonesia",
+        kampus: "Universitas Jabal Ghafur",
+        jurusan: "Teknik Informatika",
+        semester: "4 (Empat)",
+        pengalaman: "Pada semester 4 ini, saya fokus mendalami pengembangan web, JavaScript, dan basis data untuk meningkatkan kemampuan problem solving saya."
+    };
+
+    // TAMBAHAN: Fungsi Buka Akses
+    function izinkanAkses() {
+        document.getElementById('layar-persetujuan').style.display = 'none';
+        document.getElementById('konten-utama').style.display = 'block';
+        muatData();
+    }
+
+    function muatData() {
+        document.getElementById("display-nama-header").innerText = dataMahasiswa.nama;
+        document.getElementById("display-npm-header").innerText = dataMahasiswa.npm;
+        document.getElementById("val-nama").innerText = dataMahasiswa.nama;
+        document.getElementById("val-email").innerText = dataMahasiswa.email;
+        document.getElementById("val-alamat").innerText = dataMahasiswa.alamat;
+        document.getElementById("val-kampus").innerText = dataMahasiswa.kampus;
+        document.getElementById("val-jurusan").innerText = dataMahasiswa.jurusan;
+        document.getElementById("val-semester").innerText = dataMahasiswa.semester;
+        document.getElementById("val-pengalaman").innerText = dataMahasiswa.pengalaman;
+    }
+
+    function switchTab(sectionId, btn) {
+        document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(t => t.classList.remove('active'));
+        document.getElementById(sectionId).classList.add('active');
+        btn.classList.add('active');
+    }
+
+    // TAMBAHAN: Fungsi Preview Foto
+    function previewImage(event) {
+        const reader = new FileReader();
+        reader.onload = function() {
+            document.getElementById('display-foto').src = reader.result;
+        }
+        if(event.target.files[0]) {
+            reader.readAsDataURL(event.target.files[0]);
+        }
+    }
+</script>
+
+</body>
+</html>
